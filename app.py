@@ -6,6 +6,7 @@ import json
 from aiohttp import web
 from aiortc import RTCPeerConnection, RTCSessionDescription, MediaStreamTrack
 from av import VideoFrame
+import numpy as np
 
 pcs = set()
 
@@ -20,10 +21,12 @@ class CameraStreamTrack(MediaStreamTrack):
 
     async def recv(self):
         pts, time_base = await self.next_timestamp()
-        ret, frame = self.cap.read()
-        if not ret:
-            print("❌ Failed to read frame from camera")
-            raise Exception("Camera read failed")
+        # ret, frame = self.cap.read()
+        # if not ret:
+        #     print("❌ Failed to read frame from camera")
+        #     raise Exception("Camera read failed")
+        img = np.zeros((480, 640, 3), dtype=np.uint8)
+        img[:] = (0, 255, 0)  # Hijau
 
         print("✅ Sending video frame")
         video_frame = VideoFrame.from_ndarray(frame, format="bgr24")
