@@ -1,5 +1,5 @@
 # app.py
-
+from picamera2 import Picamera2
 import cv2
 import asyncio
 import json
@@ -15,20 +15,13 @@ class CameraStreamTrack(MediaStreamTrack):
 
     def __init__(self):
         super().__init__()
-        self.cap = cv2.VideoCapture('/dev/video10')
-        if not self.cap.isOpened():
-            raise RuntimeError("⚠️ Failed to open /dev/video10")
+        self.picam2 = Picamera2()
+        self.picam2.configure(self.picam2.create_video_configuration(main={"size": (640, 480)}))
+        self.picam2.start()
 
     async def recv(self):
         pts, time_base = await self.next_timestamp()
-        # ret, frame = self.cap.read()
-        # if not ret:
-        #     print("❌ Failed to read frame from camera")
-        #     raise Exception("Camera read failed")
-        img = np.zeros((480, 640, 3), dtype=np.uint8)
-        img[:] = (0, 255, 0)  # Hijau
-
-        print("✅ Sending video frame")
+        frame = self.picam2.capture_array()
         video_frame = VideoFrame.from_ndarray(frame, format="bgr24")
         video_frame.pts = pts
         video_frame.time_base = time_base
