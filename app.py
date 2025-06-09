@@ -25,6 +25,8 @@ class CameraStreamTrack(MediaStreamTrack):
             print("❌ Failed to read frame from camera")
             raise Exception("Camera read failed")
 
+        frame = cv2.resize(frame, (640, 360))
+
         print("✅ Sending video frame")
         video_frame = VideoFrame.from_ndarray(frame, format="bgr24")
         video_frame.pts = pts
