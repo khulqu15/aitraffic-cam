@@ -14,7 +14,7 @@ class CameraStreamTrack(MediaStreamTrack):
 
     def __init__(self):
         super().__init__()
-        self.cap = cv2.VideoCapture('/dev/video0')  # ganti jika pakai v4l2loopback
+        self.cap = cv2.VideoCapture(0)  # ganti jika pakai v4l2loopback
 
     async def recv(self):
         pts, time_base = await self.next_timestamp()
