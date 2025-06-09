@@ -27,14 +27,24 @@ class CameraStreamTrack(MediaStreamTrack):
         video_frame.time_base = time_base
         return video_frame
 
-
 @web.middleware
 async def cors_middleware(request, handler):
-    response = await handler(request)
+    if request.method == 'OPTIONS':
+        return web.Response(status=200, headers={
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+            'Access-Control-Allow-Headers': '*',
+        })
+
+    try:
+        response = await handler(request)
+    except web.HTTPException as ex:
+        response = ex
     response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
+    response.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = '*'
     return response
+
 
 async def offer(request):
     params = await request.json()
