@@ -14,7 +14,7 @@ class CameraStreamTrack(MediaStreamTrack):
 
     def __init__(self):
         super().__init__()
-        self.cap = cv2.VideoCapture('/dev/video0')
+        self.cap = cv2.VideoCapture("libcamerasrc ! videoconvert ! video/x-raw,format=BGR ! appsink", cv2.CAP_GSTREAMER)
         if not self.cap.isOpened():
             raise RuntimeError("⚠️ Failed to open /dev/video0")
 
