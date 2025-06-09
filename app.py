@@ -14,18 +14,23 @@ class CameraStreamTrack(MediaStreamTrack):
 
     def __init__(self):
         super().__init__()
-        self.cap = cv2.VideoCapture('/dev/video0')  # Gunakan kamera CSI
+        self.cap = cv2.VideoCapture('/dev/video0')
+        if not self.cap.isOpened():
+            raise RuntimeError("⚠️ Failed to open /dev/video0")
 
     async def recv(self):
         pts, time_base = await self.next_timestamp()
         ret, frame = self.cap.read()
         if not ret:
-            raise Exception("Failed to read from CSI camera (/dev/video0)")
+            print("❌ Failed to read frame from camera")
+            raise Exception("Camera read failed")
 
+        print("✅ Sending video frame")
         video_frame = VideoFrame.from_ndarray(frame, format="bgr24")
         video_frame.pts = pts
         video_frame.time_base = time_base
         return video_frame
+
 
 @web.middleware
 async def cors_middleware(request, handler):
