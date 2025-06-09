@@ -14,9 +14,9 @@ class CameraStreamTrack(MediaStreamTrack):
 
     def __init__(self):
         super().__init__()
-        self.cap = cv2.VideoCapture("v4l2src device=/dev/video0 ! videoconvert ! appsink", cv2.CAP_GSTREAMER)
+        self.cap = cv2.VideoCapture('/dev/video10')
         if not self.cap.isOpened():
-            raise RuntimeError("⚠️ Failed to open /dev/video0")
+            raise RuntimeError("⚠️ Failed to open /dev/video10")
 
     async def recv(self):
         pts, time_base = await self.next_timestamp()
