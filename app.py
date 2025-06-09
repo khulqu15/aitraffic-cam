@@ -14,13 +14,13 @@ class CameraStreamTrack(MediaStreamTrack):
 
     def __init__(self):
         super().__init__()
-        self.cap = cv2.VideoCapture(0)  # ganti jika pakai v4l2loopback
+        self.cap = cv2.VideoCapture('/dev/video0')  # Gunakan kamera CSI
 
     async def recv(self):
         pts, time_base = await self.next_timestamp()
         ret, frame = self.cap.read()
         if not ret:
-            raise Exception("Camera read failed")
+            raise Exception("Failed to read from CSI camera (/dev/video0)")
 
         video_frame = VideoFrame.from_ndarray(frame, format="bgr24")
         video_frame.pts = pts
@@ -52,7 +52,6 @@ async def offer(request):
 
     pc = RTCPeerConnection()
     pcs.add(pc)
-
     pc.addTrack(CameraStreamTrack())
 
     await pc.setRemoteDescription(offer)
